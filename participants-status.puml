@@ -1,0 +1,11 @@
+@startuml
+
+QuarkusCore <- Camel
+note left
+fwonkak
+<img:https://img.shields.io/github/issues/quarkusio/quarkus/triage/ci-participant>
+end note
+
+QuarkusCore <- Platform
+
+@enduml

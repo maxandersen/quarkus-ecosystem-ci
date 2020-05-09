@@ -1,0 +1,45 @@
+name: "Dashboard"
+
+# Adding the dispatch event to allow restarting the build on demand
+on:
+    watch:
+      types: [started]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    if: github.actor == 'maxandersen'
+
+    steps:
+    - name: check out
+      uses: actions/checkout@v2
+    - name: check out pages branch
+      uses: actions/checkout@v2
+      with:
+        ref: 'gh-pages'
+        path: 'out'
+
+    - name: 'Generate Dashboard'
+      uses: ethomson/issue-dashboard@v1
+      with:
+        config: |
+          title: 'Dashboard'
+          output:
+            format: html
+            filename: 'out/index.html'
+          sections:
+          - title: 'Pull Requests'
+            widgets:
+            - type: 'table'
+              title: 'New Pull Requests (This Week)'
+              issue_query: 'repo:quarkusio/quarkus is:open created:>{{ date("-7 days") }} is:issue sort:created-asc'
+        token: ${{ github.token }}
+    - name: Publish Dashboard
+      run: |
+        git add .
+        git config user.name 'Dashboard User'
+        git config user.email 'nobody@nowhere'
+        git commit -m 'Documentation update' --allow-empty
+        git push origin gh-pages
+      working-directory: out
